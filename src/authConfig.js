@@ -5,9 +5,6 @@ const redirectUri = typeof chrome !== "undefined" && chrome.identity ?
     chrome.identity.getRedirectURL() : 
     `${window.location.origin}/sidepanel.html`;
 
-console.log("Chrome extension redirect URI set to ", redirectUri);
-console.log("This url must be registered in the Azure portal as a single-page application redirect uri, and as the post logout url");
-
 const msalInstance = new msal.PublicClientApplication({
     auth: {
         authority: "https://login.microsoftonline.com/common/",
@@ -21,7 +18,6 @@ const msalInstance = new msal.PublicClientApplication({
 });
 
 msalInstance.initialize().then(() => {
-    console.log("initialize");
     msalInstance.handleRedirectPromise().then(()=>{
         // Set currently logged in account
         const accounts = msalInstance.getAllAccounts();
@@ -33,9 +29,8 @@ msalInstance.initialize().then(() => {
     });
 });
 
-/**
- * Generates a login url
- */
+
+//  Generates a login url
 export async function getLoginUrl(request, reject) {
     return new Promise((resolve) => {
         msalInstance.loginRedirect({
@@ -48,9 +43,8 @@ export async function getLoginUrl(request, reject) {
     });
 }
 
-/**
- * Generates a logout url
- */
+
+// Generates a logout url
 export async function getLogoutUrl(request) {
     return new Promise((resolve, reject) => {
         msalInstance.logout({
@@ -63,9 +57,8 @@ export async function getLogoutUrl(request) {
     });
 }
 
-/**
- * Makes an http request to the MS graph Me endpoint
- */
+
+// Makes an http request to the MS graph Me endpoint
 export async function callGraphMeEndpoint() {
     const {
         accessToken
@@ -73,13 +66,12 @@ export async function callGraphMeEndpoint() {
         scopes: [ "user.read" ],
         account: msalInstance.getAllAccounts()[0]
     });
-
     return callMSGraph("https://graph.microsoft.com/v1.0/me", accessToken);
 }
 
-/**
- * Makes an http request to the given MS graph endpoint
- */
+
+// Makes an http request to the given MS graph endpoint
+
 async function callMSGraph(endpoint, accessToken) {
     const headers = new Headers();
     const bearer = `Bearer ${accessToken}`;
@@ -96,9 +88,8 @@ async function callMSGraph(endpoint, accessToken) {
         .catch(error => console.log(error));
 }
 
-/**
- * Attempts to silent acquire an access token, falling back to interactive.
- */
+
+// Attempts to silent acquire an access token, falling back to interactive.
 async function acquireToken(request) {
     return msalInstance.acquireTokenSilent(request)
         .catch(async (error) => {
@@ -109,9 +100,7 @@ async function acquireToken(request) {
         })
 }
 
-/**
- * Generates an acquire token url
- */
+// Generates an acquire token url
 async function getAcquireTokenUrl(request) {
     return new Promise((resolve, reject) => {
         msalInstance.acquireTokenRedirect({
@@ -124,11 +113,10 @@ async function getAcquireTokenUrl(request) {
     });
 }
 
-/**
- * Launch the Chromium web auth UI.
- * @param {*} url AAD url to navigate to.
- * @param {*} interactive Whether or not the flow is interactive
- */
+
+// Launch the Chromium web auth UI.
+// @param {*} url AAD url to navigate to.
+// @param {*} interactive Whether or not the flow is interactive
 export async function launchWebAuthFlow(url) {
     return new Promise((resolve, reject) => {
         chrome.identity.launchWebAuthFlow({
@@ -148,9 +136,8 @@ export async function launchWebAuthFlow(url) {
     })
 }
 
-/**
- * Returns the user sign into the browser.
- */
+
+// Returns the user sign into the browser.
 async function getSignedInUser() {
     return new Promise((resolve, reject) => {
         if (chrome && chrome.identity) {

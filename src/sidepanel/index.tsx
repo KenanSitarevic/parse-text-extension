@@ -4,8 +4,8 @@ import { getLoginUrl, getLogoutUrl, launchWebAuthFlow, callGraphMeEndpoint } fro
 
 function IndexSidePanel() {
   const [user, setUser] = useState(null);
-  const [scrapedText, setScrapedText] = useState(null); // Use null for initial state
-  const [loading, setLoading] = useState(true); // State to manage loading indicator
+  const [scrapedText, setScrapedText] = useState(null); 
+  const [loading, setLoading] = useState(true); 
 
   const fetchScrapedText = async () => {
     setLoading(true);
@@ -14,9 +14,9 @@ function IndexSidePanel() {
       setScrapedText(text);
     } catch (error) {
       console.error("Error fetching scraped text:", error);
-      setScrapedText('Error fetching data'); // Handle error state if needed
+      setScrapedText('Error fetching data');
     } finally {
-      setLoading(false); // Turn off loading indicator regardless of success or failure
+      setLoading(false); 
     }
   };
 
@@ -24,22 +24,17 @@ function IndexSidePanel() {
 const signIn = async () => {
   const url = await getLoginUrl();
   const result = await launchWebAuthFlow(url);
-  console.log(result.account);
   setUser(result.account)
 };
 
-/**
-* Sign out button
-*/
+// Sign out button
 const signOut = async () => {
   const logoutUrl = await getLogoutUrl();
   await launchWebAuthFlow(logoutUrl);
   setUser(null)
 };
 
-/**
-* Call graph button
-*/
+// Call graph button
 const callGraph = async () => {
   const graphResult = await callGraphMeEndpoint();
   console.log(graphResult.displayName);
@@ -79,7 +74,6 @@ const callGraph = async () => {
                     { <p>{scrapedText.text}</p>}
                 </div>
             )}
-      {/* { !loading && <p>{scrapedText.text}</p>} */} 
     </div>
   );
 }
